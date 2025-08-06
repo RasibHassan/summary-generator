@@ -11,3 +11,4 @@ youtube-transcript-api
 pytube
 whisper-openai
 yt-dlp
+anthropic
