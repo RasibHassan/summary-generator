@@ -9,5 +9,5 @@ tiktoken
 praw
 youtube-transcript-api
 pytube
-whisper
+whisper-openai
 yt-dlp
