@@ -1,0 +1,13 @@
+streamlit
+pandas
+python-docx
+openai
+tavily-python
+python-dotenv
+PyMuPDF
+tiktoken
+praw
+youtube-transcript-api
+pytube
+whisper
+yt-dlp
