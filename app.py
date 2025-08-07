@@ -51,7 +51,7 @@ def add_formatted_run(paragraph, text):
 
 def write_to_word(text, output_file="generated_summary.docx"):
     doc = Document()
-    title = doc.add_heading("Generated Topic-Wise Study Plan", level=1)
+    title = doc.add_heading("Generated Topic-Wise Plan", level=1)
     title.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
     lines = text.split("\n")
@@ -82,7 +82,7 @@ def write_to_word(text, output_file="generated_summary.docx"):
 
 # Helper Functions for Study Plan Generator
 def search_and_extract(prompt, category, include_domains=None, exclude_domains=None):
-    max_result = 10  # Limit to 10 results
+    max_result = 5  # Limit to 10 results
     if category == "YouTube Videos":
         max_result = 5
 
