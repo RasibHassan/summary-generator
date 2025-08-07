@@ -370,7 +370,7 @@ elif feature_choice == "🎯 Study Plan Generator":
 
         # Submit and Save
         st.divider()
-        if st.button("✅ Submit and Save JSON"):
+        if st.button("✅ Submit "):
             # Combine Tavily + manual
             def parse_links(text): return [url.strip() for url in text.split(",") if url.strip()]
             final_data = {
