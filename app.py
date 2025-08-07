@@ -163,7 +163,7 @@ if feature_choice == "📝 Summary Generator":
             with open(video_path, "wb") as f:
                 f.write(video_file.read())
             st.write(f"🔄 Generating summary for video: {video_file.name}")
-            summary = get_summary_from_video(video_path)
+            summary,transcript = get_summary_from_video(video_path)
             if summary:
                 doc.add_heading("Video File Summary", level=2)
                 doc.add_heading(f"File: {video_file.name}", level=2)
@@ -172,7 +172,7 @@ if feature_choice == "📝 Summary Generator":
                 st.success(f"✔ Summary added for video: {video_file.name}")
             else:
                 st.warning(f"⚠ No summary generated for video: {video_file.name}")
-                st.write(f"❌ Failed to transcribe or summarize the video. {summary}")
+                st.write(f"Transcript. {transcript}")
 
         count = 1
         for url in youtube_urls:

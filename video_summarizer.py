@@ -78,4 +78,4 @@ def get_summary_from_video(video_path):
         return None
 
     summary = summarize_text(transcript)
-    return summary
+    return summary,transcript
