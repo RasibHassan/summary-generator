@@ -172,6 +172,7 @@ if feature_choice == "📝 Summary Generator":
                 st.success(f"✔ Summary added for video: {video_file.name}")
             else:
                 st.warning(f"⚠ No summary generated for video: {video_file.name}")
+                st.write(f"❌ Failed to transcribe or summarize the video. {summary}")
 
         count = 1
         for url in youtube_urls:
