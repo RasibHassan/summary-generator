@@ -9,6 +9,8 @@ tiktoken
 praw
 youtube-transcript-api
 pytube
-whisper-openai
+llvmlite==0.42.0
+numba==0.59.0
+openai-whisper
 yt-dlp
 anthropic
