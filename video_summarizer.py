@@ -71,11 +71,11 @@ def get_summary_from_video(video_path):
     """
     if not os.path.exists(video_path):
         print("❌ File not found.")
-        return None
+        return " File not found."
 
     transcript = transcribe_video(video_path)
     if not transcript:
-        return None
+        return "❌ Failed to transcribe the video."
 
     summary = summarize_text(transcript)
-    return summary,transcript
+    return summary
