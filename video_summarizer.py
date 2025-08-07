@@ -74,9 +74,9 @@ def get_summary_from_video(video_path):
         return None
 
     transcript = transcribe_video(video_path)
-    return str(transcript)
-    # if not transcript:
-    #     return None
+    
+    if not transcript:
+        return None
 
-    # summary = summarize_text(transcript)
-    # return summary
+    summary = summarize_text(transcript)
+    return summary
