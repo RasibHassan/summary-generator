@@ -17,6 +17,8 @@ from urls_fetch import main as urls_main
 from gpt import main as gpt_main
 from claude import main as claude_main
 from dotenv import load_dotenv
+import tempfile
+import shutil
 
 load_dotenv()
 # Configuration
@@ -28,9 +30,6 @@ client = OpenAI(api_key=openai_api_key)
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
 
-# Setup directories
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 uploaded_filenames = []
 
 # Helper Functions for Summary Generator
@@ -157,70 +156,96 @@ if feature_choice == "📝 Summary Generator":
         doc = Document()
         doc.add_heading("Merged Summaries", level=1)
         added_any_summary = False
+        temp_files_to_cleanup = []
 
-        for video_file in video_files:
-            video_path = os.path.join(UPLOAD_DIR, video_file.name)
-            with open(video_path, "wb") as f:
-                f.write(video_file.read())
-            st.write(f"🔄 Generating summary for video: {video_file.name}")
-            summary = get_summary_from_video(video_path)
-            if summary:
-                doc.add_heading("Video File Summary", level=2)
-                doc.add_heading(f"File: {video_file.name}", level=2)
-                doc.add_paragraph(summary)
-                added_any_summary = True
-                st.success(f"✔ Summary added for video: {video_file.name}")
-            else:
-                st.warning(f"⚠ No summary generated for video: {video_file.name}")
+        # Create temporary directory for this session
+        temp_dir = tempfile.mkdtemp()
+        temp_files_to_cleanup.append(temp_dir)
 
-        count = 1
-        for url in youtube_urls:
-            if url.strip():
-                st.write(f"🔄 Generating summary for YouTube URL-{count}")
-                summary = summarize_youtube_video(url)
+        try:
+            for video_file in video_files:
+                # Create temporary file for video
+                temp_video = tempfile.NamedTemporaryFile(delete=False, suffix=f"_{video_file.name}", dir=temp_dir)
+                temp_video.write(video_file.read())
+                temp_video.close()
+                temp_files_to_cleanup.append(temp_video.name)
+                
+                st.write(f"🔄 Generating summary for video: {video_file.name}")
+                summary = get_summary_from_video(temp_video.name)
                 if summary:
-                    doc.add_heading("YouTube Video Summary", level=2)
-                    doc.add_heading(f"URL: {url}", level=2)
+                    doc.add_heading("Video File Summary", level=2)
+                    doc.add_heading(f"File: {video_file.name}", level=2)
                     doc.add_paragraph(summary)
                     added_any_summary = True
-                    st.success(f"✔ Summary added for: URL-{count}")
-                    count += 1
+                    st.success(f"✔ Summary added for video: {video_file.name}")
                 else:
-                    st.warning(f"⚠ No summary for: {url}")
+                    st.warning(f"⚠ No summary generated for video: {video_file.name}")
 
-        for doc_file in document_files:
-            doc_path = os.path.join(UPLOAD_DIR, doc_file.name)
-            with open(doc_path, "wb") as f:
-                f.write(doc_file.read())
-            st.write(f"🔄 Generating summary for document: {doc_file.name}")
-            summary = generate_summary_from_file(doc_path)
-            if summary:
-                doc.add_heading("Document Summary", level=2)
-                doc.add_heading(f"File: {doc_file.name}", level=2)
-                doc.add_paragraph(summary)
-                added_any_summary = True
-                st.success(f"✔ Summary added for document: {doc_file.name}")
-            else:
-                st.warning(f"⚠ No summary generated for document: {doc_file.name}")
+            count = 1
+            for url in youtube_urls:
+                if url.strip():
+                    st.write(f"🔄 Generating summary for YouTube URL-{count}")
+                    summary = summarize_youtube_video(url)
+                    if summary:
+                        doc.add_heading("YouTube Video Summary", level=2)
+                        doc.add_heading(f"URL: {url}", level=2)
+                        doc.add_paragraph(summary)
+                        added_any_summary = True
+                        st.success(f"✔ Summary added for: URL-{count}")
+                        count += 1
+                    else:
+                        st.warning(f"⚠ No summary for: {url}")
 
-        if added_any_summary:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_path = os.path.join(UPLOAD_DIR, f"merged_summary_{timestamp}.docx")
-            doc.save(output_path)
+            for doc_file in document_files:
+                # Create temporary file for document
+                temp_doc = tempfile.NamedTemporaryFile(delete=False, suffix=f"_{doc_file.name}", dir=temp_dir)
+                temp_doc.write(doc_file.read())
+                temp_doc.close()
+                temp_files_to_cleanup.append(temp_doc.name)
+                
+                st.write(f"🔄 Generating summary for document: {doc_file.name}")
+                summary = generate_summary_from_file(temp_doc.name)
+                if summary:
+                    doc.add_heading("Document Summary", level=2)
+                    doc.add_heading(f"File: {doc_file.name}", level=2)
+                    doc.add_paragraph(summary)
+                    added_any_summary = True
+                    st.success(f"✔ Summary added for document: {doc_file.name}")
+                else:
+                    st.warning(f"⚠ No summary generated for document: {doc_file.name}")
 
-            # Store in session state
-            st.session_state.summary_generated = True
-            st.session_state.summary_path = output_path
-            st.session_state.timestamp = timestamp
+            if added_any_summary:
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                # Create temporary file for output
+                temp_output = tempfile.NamedTemporaryFile(delete=False, suffix=f"_merged_summary_{timestamp}.docx", dir=temp_dir)
+                temp_output.close()
+                doc.save(temp_output.name)
+                temp_files_to_cleanup.append(temp_output.name)
 
-            with open(output_path, "rb") as f:
-                st.download_button(
-                    label="📥 Download Original Summary",
-                    data=f,
-                    file_name="Generated_summary.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-            st.success("✅ Summary generation complete!")
+                # Store in session state
+                st.session_state.summary_generated = True
+                st.session_state.summary_path = temp_output.name
+                st.session_state.timestamp = timestamp
+
+                with open(temp_output.name, "rb") as f:
+                    st.download_button(
+                        label="📥 Download Original Summary",
+                        data=f,
+                        file_name="Generated_summary.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+                st.success("✅ Summary generation complete!")
+
+        finally:
+            # Clean up temporary files
+            for temp_file in temp_files_to_cleanup:
+                try:
+                    if os.path.isfile(temp_file):
+                        os.remove(temp_file)
+                    elif os.path.isdir(temp_file):
+                        shutil.rmtree(temp_file)
+                except Exception as e:
+                    st.warning(f"⚠ Error cleaning up temporary file {temp_file}: {e}")
 
     # === GPT Reformatting ===
     if st.session_state.summary_generated:
@@ -266,11 +291,14 @@ Here are the summaries:
                         )
 
                         formatted_content = response.choices[0].message.content.strip()
-                        gpt_path = os.path.join(UPLOAD_DIR, f"enhanced_summary.docx")
+                        
+                        # Create temporary file for GPT output
+                        temp_gpt = tempfile.NamedTemporaryFile(delete=False, suffix="_enhanced_summary.docx")
+                        temp_gpt.close()
+                        
+                        write_to_word(formatted_content, temp_gpt.name)
 
-                        write_to_word(formatted_content, gpt_path)
-
-                        with open(gpt_path, "rb") as f:
+                        with open(temp_gpt.name, "rb") as f:
                             st.download_button(
                                 label="📥 Download GPT-Enhanced Summary",
                                 data=f,
@@ -279,14 +307,14 @@ Here are the summaries:
                             )
                         st.success("✅ GPT-enhanced summary is ready!")
 
+                        # Clean up temporary GPT file
                         try:
-                            for filename in os.listdir(UPLOAD_DIR):
-                                file_path = os.path.join(UPLOAD_DIR, filename)
-                                if os.path.isfile(file_path):
-                                    os.remove(file_path)
-                            st.info("🧹 Temporary uploaded files have been deleted.")
+                            os.remove(temp_gpt.name)
                         except Exception as e:
-                            st.warning(f"⚠ Error during cleanup: {e}")
+                            st.warning(f"⚠ Error cleaning up temporary GPT file: {e}")
+                        
+                        st.info("🧹 Temporary files have been cleaned up.")
+                        
                 except Exception as e:
                     st.error(f"❌ GPT API Error: {e}")
 
