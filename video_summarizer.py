@@ -21,7 +21,7 @@ def transcribe_video(video_path):
         return result["text"]
     except Exception as e:
         print(f"❌ Transcription failed: {e}")
-        return None
+        return e
 
 def summarize_text(text):
     """Use OpenAI GPT to summarize the text."""
@@ -74,8 +74,9 @@ def get_summary_from_video(video_path):
         return None
 
     transcript = transcribe_video(video_path)
-    if not transcript:
-        return None
+    return str(transcript)
+    # if not transcript:
+    #     return None
 
-    summary = summarize_text(transcript)
-    return summary
+    # summary = summarize_text(transcript)
+    # return summary
