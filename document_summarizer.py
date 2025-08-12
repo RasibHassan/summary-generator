@@ -54,26 +54,22 @@ def split_text_by_tokens(text, max_tokens=280000):
 # === Prompt for summarization ===
 def build_summary_prompt(text_chunk):
     return f"""
-Please read the following text and provide a detailed, well-structured summary in simple and easy-to-understand English. The summary should cover all major points, concepts, and events from beginning to end, without skipping any important information or context.
+Summarize this text in detail. Cover ALL topics and important points mentioned.
 
-Organize the summary in clear, logical paragraphs.
+REQUIREMENTS:
+- Include every major concept, fact, and idea
+- Use clear headings for different sections
+- Explain key terms and definitions
+- Include specific examples and details
+- Don't skip anything important
+- Use simple, easy-to-understand language
+- use less bullets and more paragraphs
+- Make it comprehensive and thorough
 
-ensure all key ideas and arguments are preserved.
+This summary will be used for studying, so be thorough and complete.
 
-Highlight the most important facts, events, characters, or findings.
+TEXT:
 
-If there are different sections or topics, summarize each one clearly.
-
-Include cause-effect relationships, comparisons, timelines, or conclusions, if present.
-
-Do not include personal opinions—just summarize what the text says.
-
-Create headings for each section if the text is divided into parts.
-
-Ensure that nothing essential is left out.
-
-HERE IS THE TEXT TO SUMMARIZE:
-### Text:
 \"\"\"
 {text_chunk}
 \"\"\"

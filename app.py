@@ -212,19 +212,18 @@ if feature_choice == "📝 Summary Generator":
             st.session_state.summary_generated = True
             st.session_state.summary_path = output_path
             st.session_state.timestamp = timestamp
-
-            with open(output_path, "rb") as f:
-                st.download_button(
-                    label="📥 Download Original Summary",
-                    data=f,
-                    file_name="Generated_summary.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
             st.success("✅ Summary generation complete!")
 
     # === GPT Reformatting ===
     if st.session_state.summary_generated:
         st.subheader("✨ Enhance Summary with GPT")
+        selected_model = st.selectbox(
+                "Choose GPT Model",
+                options=["gpt-4.1-mini", "gpt-5-mini", "gpt-5"],
+                index=0
+            )
+
+
         if st.button("🔄 Reformat Using GPT"):
             with st.spinner("🧠 GPT is processing and enhancing the summary..."):
                 try:
@@ -236,28 +235,39 @@ if feature_choice == "📝 Summary Generator":
                         st.error("❌ Summary content is empty. Cannot process.")
                     else:
                         prompt = f"""
-You are a professional tutor who has reviewed multiple video lecture summaries on the same topic. Your task is to:
+        You are an expert tutor. Merge these study materials summaries into one complete learning guide.
 
-1. Understand the key ideas across all summaries.
-2. Identify repeated concepts, unique insights, and any contradictions or differences in explanations.
-- Clearly explain what the differences are and why they might exist.
-3 Generate a comprehensive, structured explanation that covers all aspects of the topic.
+        TASK:
+        1. Combine all notes/chapters/topics into a single, organized summary
+        2. Arrange topics in logical learning order (basics → advanced)
+        3. Include ALL points from every source
+        4. Highlight any conflicts between sources and explain why they exist
+        5. Add your own knowledge to fill gaps and provide context
+        6. Ensure the final summary is comprehensive and easy to follow
 
-Then merge all summaries into one well-structured explanation.
 
-Organize the explanation like a tutor would:
-- Start with Basics (definitions, foundations)
-- Then Intermediate Concepts (examples, applications)
-- Then Advanced Insights (expert-level analysis, edge cases)
 
-Make the explanation easy to follow, detailed, and educational — like you're teaching a student who wants to fully understand the topic.
+        STRUCTURE:
+        ## FUNDAMENTALS
+        Core concepts and definitions
 
-Here are the summaries:
-{full_text}
-"""
+        ## KEY TOPICS  
+        Main ideas with examples and applications
+
+        ## ADVANCED CONCEPTS
+        Complex topics and expert insights
+
+        ## SUMMARY
+        Key takeaways and important points to remember
+
+        Make it easy to understand and study from. Don't skip anything.
+
+        Study Material summaries:
+        {full_text}
+        Now write the final, detailed, well-organized explanation """
 
                         response = client.chat.completions.create(
-                            model="gpt-4.1-mini",
+                            model=selected_model,
                             messages=[
                                 {"role": "system", "content": "You are an expert summarizer and tutor."},
                                 {"role": "user", "content": prompt}
