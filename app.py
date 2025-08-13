@@ -283,7 +283,6 @@ if feature_choice == "📝 Summary Generator":
                                         input=[{"role": "user", "content": prompt}],
                                         text={"verbosity": "high"},
                                         reasoning={"effort": "low"},
-                                        max_tokens = 30000 
 
                                     )
 
