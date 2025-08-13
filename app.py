@@ -245,7 +245,7 @@ if feature_choice == "📝 Summary Generator":
         5. Add your own knowledge to fill gaps and provide context
         6. Ensure the final summary is comprehensive and easy to follow
 
-
+        note: generate a detailed summary as much as tokens allow 
 
         STRUCTURE:
         ## FUNDAMENTALS
