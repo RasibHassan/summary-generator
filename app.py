@@ -273,16 +273,18 @@ if feature_choice == "📝 Summary Generator":
                                     {"role": "system", "content": "You are an expert summarizer and tutor."},
                                     {"role": "user", "content": prompt}
                                 ],
+                                max_tokens=10000
                                 temperature=0.5
                             )
                             formatted_content = response.choices[0].message.content.strip()
                         else:
                             response = client.responses.create(
-                                        model="gpt-5-mini",
+                                        model=selected_model,
                                         input=[{"role": "user", "content": prompt}],
                                         text={"verbosity": "high"},
                                         reasoning={"effort": "low"},
                                     )
+                            max_tokens = 30000 
 
                             formatted_content = response.output_text
                         gpt_path = os.path.join(UPLOAD_DIR, f"enhanced_summary.docx")
