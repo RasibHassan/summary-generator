@@ -266,16 +266,25 @@ if feature_choice == "📝 Summary Generator":
         {full_text}
         Now write the final, detailed, well-organized explanation """
 
-                        response = client.chat.completions.create(
-                            model=selected_model,
-                            messages=[
-                                {"role": "system", "content": "You are an expert summarizer and tutor."},
-                                {"role": "user", "content": prompt}
-                            ],
-                            temperature=0.5
-                        )
+                        if selected_model == "gpt-4.1-mini":
+                            response = client.chat.completions.create(
+                                model="gpt-4.1-mini",
+                                messages=[
+                                    {"role": "system", "content": "You are an expert summarizer and tutor."},
+                                    {"role": "user", "content": prompt}
+                                ],
+                                temperature=0.5
+                            )
+                            formatted_content = response.choices[0].message.content.strip()
+                        else:
+                            response = client.responses.create(
+                                        model="gpt-5-mini",
+                                        input=[{"role": "user", "content": prompt}],
+                                        text={"verbosity": "high"},
+                                        reasoning={"effort": "low"},
+                                    )
 
-                        formatted_content = response.choices[0].message.content.strip()
+                            formatted_content = response.output_text
                         gpt_path = os.path.join(UPLOAD_DIR, f"enhanced_summary.docx")
 
                         write_to_word(formatted_content, gpt_path)
