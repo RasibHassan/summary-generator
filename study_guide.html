@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Certification Study Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .executive-summary {
+            padding: 50px 40px;
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8f2ff 100%);
+            border-bottom: 4px solid #2563eb;
+        }
+
+        .executive-summary h2 {
+            color: #1e40af;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .executive-summary p {
+            font-size: 1.1rem;
+            color: #475569;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .progress-tracker {
+            background: #f8fafc;
+            padding: 30px 40px;
+            border-left: 5px solid #2563eb;
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .toc {
+            padding: 40px;
+            background: white;
+        }
+
+        .toc h2 {
+            color: #1e40af;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .toc-item {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1e40af;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .toc-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+            border-color: #2563eb;
+        }
+
+        .section {
+            padding: 50px 40px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .section h2 {
+            color: #1e40af;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h3 {
+            color: #2563eb;
+            font-size: 1.5rem;
+            margin: 30px 0 15px 0;
+            padding-left: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .concept-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .concept-card h4 {
+            color: #1e40af;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .key-concept {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #0ea5e9;
+            transition: all 0.3s ease;
+        }
+
+        .key-concept:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.15);
+        }
+
+        .key-concept h4 {
+            color: #0c4a6e;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .collapsible {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            background: #e2e8f0;
+            padding: 15px 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collapsible-header:hover {
+            background: #cbd5e1;
+        }
+
+        .collapsible-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .collapsible.active .collapsible-content {
+            display: block;
+        }
+
+        .collapsible-toggle {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.active .collapsible-toggle {
+            transform: rotate(180deg);
+        }
+
+        .topic-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .topic-checkbox:hover {
+            background: #e2e8f0;
+        }
+
+        .topic-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #2563eb;
+        }
+
+        .topic-checkbox.completed {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 1px solid #16a34a;
+        }
+
+        .study-tips {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .study-tips h3 {
+            color: #92400e;
+            margin-bottom: 20px;
+        }
+
+        .tip-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .quick-reference {
+            background: #f1f5f9;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .reference-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .reference-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .notes-section {
+            background: #fefce8;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 1px solid #eab308;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 30px 20px;
+            }
+            
+            .toc, .executive-summary, .progress-tracker {
+                padding: 30px 20px;
+            }
+            
+            .key-concepts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            .hero-section {
+                background: #2563eb !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .collapsible-content {
+                display: block !important;
+            }
+            
+            .topic-checkbox {
+                break-inside: avoid;
+            }
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a7f3d0 0%, #a7f3d0 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.2em;
+            background-position: 0 88%;
+            font-weight: 600;
+        }
+
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .important-note {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .important-note h4 {
+            color: #dc2626;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">DevOps Certification Study Guide</h1>
+            <p class="hero-subtitle">Master CI/CD, containerization, infrastructure automation, and modern DevOps practices in 4 weeks</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="executive-summary">
+            <h2>Executive Summary</h2>
+            <p>This comprehensive study guide covers the essential DevOps concepts and practices needed for certification success and professional excellence. You'll master CI/CD pipelines, version control with Git, containerization using Docker and Kubernetes, Infrastructure as Code with Terraform and Ansible, monitoring with modern observability tools, and DevSecOps integration. The guide provides structured learning paths, practical examples, and hands-on exercises designed for focused 4-week preparation.</p>
+        </section>
+
+        <section class="progress-tracker">
+            <div class="progress-header">
+                <h3>📈 Study Progress</h3>
+                <span id="progress-text">0% Complete</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </section>
+
+        <section class="toc">
+            <h2>📚 Table of Contents</h2>
+            <div class="toc-grid">
+                <a href="#important-topics" class="toc-item">🎯 Most Important Topics</a>
+                <a href="#core-concepts" class="toc-item">📖 Core Concepts</a>
+                <a href="#exam-relevance" class="toc-item">💡 Exam Relevance</a>
+                <a href="#resources" class="toc-item">📚 Study Resources</a>
+                <a href="#strategies" class="toc-item">🧠 Study Strategies</a>
+                <a href="#study-plan" class="toc-item">📅 Study Plan</a>
+            </div>
+        </section>
+
+        <section id="important-topics" class="section">
+            <h2><span class="emoji">🎯</span>Most Important Topics to Focus On</h2>
+            
+            <div class="key-concepts-grid">
+                <div class="key-concept">
+                    <h4>🔄 CI/CD Pipelines</h4>
+                    <p>The backbone of modern DevOps practices. Essential for exam success and real-world application with automated software delivery.</p>
+                </div>
+                <div class="key-concept">
+                    <h4>📦 Git Version Control</h4>
+                    <p>Foundational skill for collaboration and code management. Complex branching and merging strategies frequently tested.</p>
+                </div>
+                <div class="key-concept">
+                    <h4>🐳 Docker & Kubernetes</h4>
+                    <p>Critical for scalable application deployment. Kubernetes concepts like pods, services, and ingress controllers are challenging but essential.</p>
+                </div>
+                <div class="key-concept">
+                    <h4>🏗️ Infrastructure as Code</h4>
+                    <p>Terraform and Ansible enable automated, consistent infrastructure provisioning. State management concepts are frequently tested.</p>
+                </div>
+                <div class="key-concept">
+                    <h4>📊 Monitoring & Observability</h4>
+                    <p>Prometheus, Grafana, and ELK Stack for maintaining system reliability. Often overlooked but crucial for production environments.</p>
+                </div>
+                <div class="key-concept">
+                    <h4>🔒 DevSecOps Integration</h4>
+                    <p>Security integration into DevOps pipelines. "Shift-left" testing and automated security scans are increasingly emphasized.</p>
+                </div>
+            </div>
+
+            <div class="topic-checkbox">
+                <input type="checkbox" id="topic-overview">
+                <label for="topic-overview"><strong>Complete Topic Overview Review</strong></label>
+            </div>
+        </section>
+
+        <section id="core-concepts" class="section">
+            <h2><span class="emoji">📖</span>Core Concepts & Learning Content</h2>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>🔄 Continuous Integration and Continuous Delivery (CI/CD)</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>📋 Concept Overview</h4>
+                        <p>CI/CD automates code integration and software delivery. CI involves automated building and testing on every commit, while CD automates deployment processes. This ensures rapid, reliable software releases with minimal manual intervention.</p>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>⚡ Key Pipeline Stages</h4>
+                        <p><strong>Code Commit → Build → Test → Deploy → Monitor</strong></p>
+                        <p>The "fail fast" principle applies - problems are detected and addressed immediately to minimize impact.</p>
+                    </div>
+
+                    <div class="important-note">
+                        <h4>⚠️ Common Pitfall</h4>
+                        <p>Don't confuse Continuous Delivery with Continuous Deployment. Delivery automates up to deployment readiness, while Deployment includes automatic production releases.</p>
+                    </div>
+
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="cicd-complete">
+                        <label for="cicd-complete">Master CI/CD Concepts</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>📦 Version Control with Git</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>🌟 Core Commands</h4>
+                        <p><span class="highlight">git clone, git add, git commit, git push, git pull, git branch, git merge</span></p>
+                        <p>Understanding branching workflows like Gitflow provides structured collaboration patterns.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h4>🔧 Advanced Features</h4>
+                        <p>Master merge conflict resolution, rebasing strategies, and debugging with git bisect. Recovery using git reflog is crucial for exam scenarios.</p>
+                    </div>
+
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="git-complete">
+                        <label for="git-complete">Master Git Workflows</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>🐳 Containerization and Orchestration</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>🐋 Docker Fundamentals</h4>
+                        <p>Docker packages applications into portable containers. Key concepts include Dockerfiles, image building, and container lifecycle management.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h4>☸️ Kubernetes Architecture</h4>
+                        <p><strong>Core Objects:</strong> Pods (smallest units), Deployments (replica management), Services (networking), Namespaces (logical partitioning)</p>
+                        <p>Master kubectl commands for resource management and troubleshooting.</p>
+                    </div>
+
+                    <div class="important-note">
+                        <h4>⚠️ Complex Areas</h4>
+                        <p>Kubernetes networking, ingress controllers, and RBAC (Role-Based Access Control) require special attention. Persistent volumes and stateful sets are frequently tested.</p>
+                    </div>
+
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="containers-complete">
+                        <label for="containers-complete">Master Containerization</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>🏗️ Infrastructure as Code (IaC)</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>🛠️ Terraform Essentials</h4>
+                        <p>Declarative infrastructure provisioning using .tf files. Key commands: <span class="highlight">terraform init, plan, apply, destroy</span></p>
+                        <p>State management and idempotency are critical concepts for reliable infrastructure.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h4>⚙️ Ansible Configuration</h4>
+                        <p>YAML-based playbooks automate configuration management. Focus on roles, modules, and inventory management for scalable automation.</p>
+                    </div>
+
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="iac-complete">
+                        <label for="iac-complete">Master Infrastructure as Code</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>📊 Monitoring and Observability</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>📈 The Three Pillars</h4>
+                        <p><strong>Metrics, Logs, and Traces</strong> provide comprehensive system visibility. Prometheus scrapes metrics, Grafana visualizes data, ELK Stack processes logs.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h4>🚨 Alerting Strategy</h4>
+                        <p>Configure meaningful alert thresholds without causing noise. Correlation between different data sources enables effective troubleshooting.</p>
+                    </div>
+
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="monitoring-complete">
+                        <label for="monitoring-complete">Master Monitoring Tools</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>🔒 DevSecOps and Security Integration</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>🛡️ Shift-Left Security</h4>
+                        <p>Integrate security early in development processes. Automated SAST (Static Application Security Testing) runs in CI pipelines to catch vulnerabilities.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h4>🔐 Secrets Management</h4>
+                        <p>Use tools like Ansible Vault or HashiCorp Vault to protect sensitive information in automated pipelines.</p>
+                    </div>
+
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="security-complete">
+                        <label for="security-complete">Master DevSecOps Practices</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exam-relevance" class="section">
+            <h2><span class="emoji">💡</span>Why This Matters: Exam Relevance</h2>
+            
+            <div class="concept-card">
+                <h4>📝 Question Formats</h4>
+                <p>Exams typically feature scenario-based questions requiring conceptual understanding rather than simple command memorization. Practice real-world problem-solving approaches.</p>
+            </div>
+
+            <div class="concept-card">
+                <h4>⚡ High-Impact Areas</h4>
+                <p><strong>CI/CD and Kubernetes</strong> carry significant scoring weight. These topics appear across multiple exam domains and distinguish qualified candidates.</p>
+            </div>
+
+            <div class="concept-card">
+                <h4>🎯 Common Exam Traps</h4>
+                <p>Confusing CD vs. deployment automation, Kubernetes networking concepts, and Terraform state management are frequent mistake areas.</p>
+            </div>
+
+            <div class="topic-checkbox">
+                <input type="checkbox" id="exam-prep-complete">
+                <label for="exam-prep-complete">Understand Exam Format and Focus Areas</label>
+            </div>
+        </section>
+
+        <section id="resources" class="section">
+            <h2><span class="emoji">📚</span>Curated Resources</h2>
+
+            <div class="study-tips">
+                <h3>📖 Recommended Books</h3>
+                <div class="tip-item">
+                    <strong>Accelerate</strong> by Forsgren, Humble, and Kim - Essential for understanding DevOps performance metrics
+                </div>
+                <div class="tip-item">
+                    <strong>The DevOps Handbook</strong> by Kim et al. - Comprehensive guide to DevOps practices and culture
+                </div>
+            </div>
+
+            <div class="study-tips">
+                <h3>🎥 Online Learning</h3>
+                <div class="tip-item">
+                    <strong>roadmap.sh/devops</strong> - Comprehensive learning roadmap with practical tutorials
+                </div>
+                <div class="tip-item">
+                    <strong>Techworld with Nana</strong> (YouTube) - Excellent Docker and Kubernetes tutorials
+                </div>
+            </div>
+
+            <div class="quick-reference">
+                <h3>🛠️ Essential Tools</h3>
+                <div class="reference-grid">
+                    <div class="reference-item">
+                        <strong>CI/CD:</strong> Jenkins, GitLab CI, CircleCI
+                    </div>
+                    <div class="reference-item">
+                        <strong>Containers:</strong> Docker, Kubernetes
+                    </div>
+                    <div class="reference-item">
+                        <strong>IaC:</strong> Terraform, Ansible
+                    </div>
+                    <div class="reference-item">
+                        <strong>Monitoring:</strong> Prometheus, Grafana, ELK
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic-checkbox">
+                <input type="checkbox" id="resources-complete">
+                <label for="resources-complete">Explore Key Learning Resources</label>
+            </div>
+        </section>
+
+        <section id="strategies" class="section">
+            <h2><span class="emoji">🧠</span>Effective Study Strategies</h2>
+
+            <div class="study-tips">
+                <h3>⏰ Time Management (4-Week Focus)</h3>
+                <div class="tip-item">
+                    <strong>Daily Commitment:</strong> 2-3 hours focused study time with weekend intensive sessions
+                </div>
+                <div class="tip-item">
+                    <strong>Active Learning:</strong> Use flashcards for command syntax and spaced repetition for concept retention
+                </div>
+                <div class="tip-item">
+                    <strong>Hands-On Practice:</strong> Build real pipelines and deploy applications - theory alone is insufficient
+                </div>
+            </div>
+
+            <div class="study-tips">
+                <h3>📝 Effective Techniques</h3>
+                <div class="tip-item">
+                    <strong>Practice Tests:</strong> Take 5-7 mock exams after mastering basics (week 3-4)
+                </div>
+                <div class="tip-item">
+                    <strong>Teaching Method:</strong> Explain concepts to others to solidify your understanding
+                </div>
+                <div class="tip-item">
+                    <strong>Error Analysis:</strong> Thoroughly review incorrect answers and focus on weak areas
+                </div>
+            </div>
+
+            <div class="important-note">
+                <h4>🎯 Success Factors</h4>
+                <p>Successful candidates emphasize hands-on practice over passive reading. They use multiple learning resources and maintain consistent daily study habits with active community engagement.</p>
+            </div>
+
+            <div class="topic-checkbox">
+                <input type="checkbox" id="strategies-complete">
+                <label for="strategies-complete">Apply Effective Study Strategies</label>
+            </div>
+        </section>
+
+        <section id="study-plan" class="section">
+            <h2><span class="emoji">📅</span>4-Week Study Plan</h2>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>Week 1-2: Foundation Building</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>🎯 Focus Areas</h4>
+                        <p>Linux command-line proficiency, networking basics, and Git fundamentals. Build strong foundational skills for advanced topics.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>📚 Activities</h4>
+                        <p>Complete CLI tutorials, practice Git branching and merging, create local repositories with conflict resolution exercises.</p>
+                    </div>
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="week1-2-complete">
+                        <label for="week1-2-complete">Complete Foundation Building</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>Week 3: CI/CD and Containerization</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>🔄 CI/CD Mastery</h4>
+                        <p>Learn Jenkins pipeline syntax, set up automated CI jobs, and understand deployment strategies.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>🐳 Container Fundamentals</h4>
+                        <p>Master Docker container lifecycle, write Dockerfiles, and begin Kubernetes basics with pods and deployments.</p>
+                    </div>
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="week3-complete">
+                        <label for="week3-complete">Master CI/CD and Containers</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3>Week 4: Advanced Topics and Review</h3>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="concept-card">
+                        <h4>🏗️ Infrastructure Automation</h4>
+                        <p>Focus on Terraform scripting and Ansible playbooks. Practice automated infrastructure provisioning.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>📊 Monitoring and Security</h4>
+                        <p>Set up monitoring dashboards, implement security scans in pipelines, and integrate DevSecOps practices.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>🎯 Final Preparation</h4>
+                        <p>Take full-length practice exams, review weak areas, and focus on scenario-based problem solving.</p>
+                    </div>
+                    <div class="topic-checkbox">
+                        <input type="checkbox" id="week4-complete">
+                        <label for="week4-complete">Complete Advanced Topics and Final Review</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="notes-section">
+            <h3>📝 Your Study Notes</h3>
+            <textarea class="notes-textarea" placeholder="Add your personal study notes, insights, and key takeaways here..."></textarea>
+        </section>
+    </div>
+
+    <script>
+        // Progress tracking functionality
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.topic-checkbox input[type="checkbox"]');
+            const checked = document.querySelectorAll('.topic-checkbox input[type="checkbox"]:checked');
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+            
+            document.getElementById('progress-fill').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = percentage + '% Complete';
+        }
+
+        // Add event listeners to checkboxes
+        document.querySelectorAll('.topic-checkbox input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const topicCheckbox = this.closest('.topic-checkbox');
+                if (this.checked) {
+                    topicCheckbox.classList.add('completed');
+                } else {
+                    topicCheckbox.classList.remove('completed');
+                }
+                updateProgress();
+            });
+        });
+
+        // Collapsible sections functionality
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const collapsible = this.parentElement;
+                collapsible.classList.toggle('active');
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Save notes to localStorage
+        const notesTextarea = document.querySelector('.notes-textarea');
+        if (notesTextarea) {
+            // Load saved notes
+            const savedNotes = localStorage.getItem('devops-study-notes');
+            if (savedNotes) {
+                notesTextarea.value = savedNotes;
+            }
+
+            // Save notes on input
+            notesTextarea.addEventListener('input', function() {
+                localStorage.setItem('devops-study-notes', this.value);
+            });
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            document.querySelectorAll('.topic-checkbox input[type="checkbox"]').forEach(checkbox => {
+                const saved = localStorage.getItem(checkbox.id);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                    checkbox.closest('.topic-checkbox').classList.add('completed');
+                }
+            });
+            updateProgress();
+        }
+
+        // Save progress to localStorage
+        document.querySelectorAll('.topic-checkbox input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                localStorage.setItem(this.id, this.checked);
+            });
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+        });
+    </script>
+</body>
+</html>

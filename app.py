@@ -80,23 +80,91 @@ def write_to_word(text, output_file="generated_summary.docx"):
 
     doc.save(output_file)
 
-# Helper Functions for Study Plan Generator
-def search_and_extract(prompt, category, include_domains=None, exclude_domains=None):
-    max_result = 5  # Limit to 10 results
-    if category == "YouTube Videos":
-        max_result = 5
+# # Helper Functions for Study Plan Generator------with Filtering links on cosine similarity
+# def search_and_extract(prompt, category, include_domains=None, exclude_domains=None):
+#     max_result = 10  # Limit to 10 results
+#     if category == "YouTube Videos":
+#         max_result = 5
 
+#     response = tavily_client.search(
+#         query=prompt,
+#         search_depth="advanced",
+#         max_results=max_result,
+#         include_answer='advanced',
+#         # include_raw_content=False,------by Owais
+#         include_raw_content=True,
+#         include_images=False,
+#         include_domains=include_domains,
+#         exclude_domains=exclude_domains
+#     )
+#     return [{"category": category, "url": r["url"]} for r in response.get("results", [])],response.get("answer", "")
+
+from tavily import TavilyClient
+from sentence_transformers import SentenceTransformer, util
+import numpy as np
+
+# Load embedding model once
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def embed_text(text):
+    """Convert text to embedding."""
+    return embedding_model.encode(text, convert_to_tensor=True)
+
+def cosine_similarity(a, b):
+    """Compute cosine similarity between two embeddings."""
+    return util.cos_sim(a, b).item()
+
+def search_and_extract(prompt, category, topic, similarity_threshold=0.60,
+                       include_domains=None, exclude_domains=None, max_results=10):
+
+    # Step 1: Tavily API Call
     response = tavily_client.search(
         query=prompt,
         search_depth="advanced",
-        max_results=max_result,
+        max_results=max_results,
         include_answer='advanced',
-        include_raw_content=False,
+        include_raw_content=True,      # <-- Key for accurate similarity
         include_images=False,
         include_domains=include_domains,
         exclude_domains=exclude_domains
     )
-    return [{"category": category, "url": r["url"]} for r in response.get("results", [])],response.get("answer", "")
+
+    results = response.get("results", [])
+    summary_answer = response.get("answer", "")
+
+    if not results:
+        return [], summary_answer
+
+    # Step 2: Embed the main topic
+    candidate_texts = []    
+    for r in results:
+        # Combine all available metadata text
+        combined = "".join([
+            r.get("title") or " ",
+            r.get("snippet") or " ",
+            r.get("raw_content") or " ",
+            r.get("url") or ""
+        ])
+        candidate_texts.append(combined)
+    url_embeddings = embedding_model.encode(candidate_texts, convert_to_tensor=True, batch_size=8)
+
+    # step 4 topic encoding
+    topic_embedding = embedding_model.encode(topic, convert_to_tensor=True)
+    # step 5 compute batch cosine similarity
+    similarities = util.cos_sim(topic_embedding, url_embeddings)[0]
+    # Step 6: Filter based on similarity threshold
+    filtered_results = []
+    for i, sim in enumerate(similarities):
+        if sim >= similarity_threshold:
+            filtered_results.append({
+                "category": category,
+                "url": results[i].get("url"),
+                "title": results[i].get("title", ""),
+                "similarity": round(float(sim), 3)
+            })
+
+    return filtered_results, summary_answer
+
 
 # App Configuration
 st.set_page_config(page_title="Smart Academic Assistant", layout="centered")
@@ -330,22 +398,52 @@ elif feature_choice == "🎯 Study Plan Generator":
     # Input field for certificate/topic
     user_input = st.text_input("Enter the certification or topic name", placeholder="e.g., PMI-PBA")
 
+    st.subheader("🎨 Customize Your Study Plan")
+
+    theme = st.text_input(
+    "Select a theme for output:",placeholder="e.g., A clean dark slide theme with bold typography.")
+
+    font = st.selectbox(
+    "Select font style:",
+    ["Sans-serif", "Serif", "Mono", "Open Sans", "Roboto", "Inter", "Georgia"]
+    )
+
+    detail_level = st.selectbox(
+    "Choose level of detail:",
+    ["Basic", "Medium", "Advanced", "Very Detailed"]
+    )
+
+    study_duration = st.number_input(
+    "How many weeks should the study plan cover?",
+    min_value=1, max_value=52, value=4
+    )
+
+    tone = st.selectbox(
+    "Select writing tone:",
+    ["Professional", "Friendly", "Motivational", "Minimalistic", "Teaching Style", "Exam-focused"]
+    )
+
+
     # Tavily search
     if st.button("Search Resources") and user_input:
         with st.spinner("Searching..."):
+            
             all_results = []
 
-            yt_prompt = f'Search YouTube for the most popular {user_input} exam preparation guides videos in English. Include only direct video URLs to study guides,Preparation tips and exam walkthroughs. Do not include playlists or channel links'
-            yt_urls, yt_answer = search_and_extract(yt_prompt, "YouTube Videos", include_domains=["youtube.com"])
+            yt_prompt = f'Find high-quality {user_input} preparation guide and tutorial videos. Focus on complete guides, exam tips, and step-by-step walkthroughs from popular educational channels. Do not include playlists or channel links'
+            # yt_urls, yt_answer = search_and_extract(yt_prompt, "YouTube Videos", include_domains=["youtube.com"])
+            yt_urls, yt_answer = search_and_extract(yt_prompt, "YouTube Videos",topic=user_input,similarity_threshold=0.50, include_domains=["youtube.com"])
             all_results += yt_urls
 
-            reddit_prompt = f'Find the Reddit posts discussing preparation strategies, shared experiences, focus areas, and recommended resources for the {user_input} exam.'
-            reddit_urls, reddit_answer = search_and_extract(reddit_prompt, "Reddit Posts", include_domains=["reddit.com"])
+            reddit_prompt = f'Find the Reddit posts discussing preparation strategies, shared experiences, focus areas, and recommended resources for the {user_input}.'
+            # reddit_urls, reddit_answer = search_and_extract(reddit_prompt, "Reddit Posts", include_domains=["reddit.com"])
+            reddit_urls, reddit_answer = search_and_extract(reddit_prompt, "Reddit Posts",topic=user_input,similarity_threshold=0.50, include_domains=["reddit.com"],max_results=20)
             all_results += reddit_urls
 
-            web_prompt = f'Search for top-quality official guides, detailed articles, books, and preparation resources for the {user_input} exam in English. Focus on the best study plans, exam strategies, syllabus breakdown, difficulty level, and expert advice from certified professionals. Provide direct links only.'
+            web_prompt = f'Find the best {user_input} study guides, preparation articles, and detailed learning resources from 2024. Include study plans, topic breakdowns, expert tips, and recommended materials.'
             
-            web_urls, web_answer = search_and_extract(web_prompt, "Web Resources", exclude_domains=["youtube.com", "reddit.com"])
+            # web_urls, web_answer = search_and_extract(web_prompt, "Web Resources", exclude_domains=["youtube.com", "reddit.com"])
+            web_urls, web_answer = search_and_extract(web_prompt, "Web Resources",topic=user_input,similarity_threshold=0.50, exclude_domains=["youtube.com", "reddit.com"])
             all_results += web_urls
 
             st.session_state["answers"] = {
@@ -427,20 +525,30 @@ elif feature_choice == "🎯 Study Plan Generator":
             
             # === Run CLAUDE.py ===
             st.write("📚 Generating final study plan with Claude...")
-            claude_main(certificate_name=user_input)
+            # claude_main()------by ow
+
+            claude_main(
+               topic=user_input,
+               theme=theme,
+               font=font,
+               detail_level=detail_level,
+              duration=study_duration,
+              tone=tone
+            )
+
 
             # Final Output Info
-            st.success("📝 Study Plan Generated: `generated_study_plan.docx`")
+            st.success("📝 Study Plan Generated: `STUDY_GUIDE.HTML.docx`")
 
         # Placeholder for future output
         st.subheader("📦 Final Output")
 
-        docx_path = "generated_study_plan.docx"
-        if os.path.exists(docx_path):
-            with open(docx_path, "rb") as docx_file:
-                st.download_button(
-                    label="📥 Download Study Plan (DOCX)",
-                    data=docx_file,
-                    file_name="study_plan.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
+        # docx_path = "generated_study_plan.docx"
+        # if os.path.exists(docx_path):
+        #     with open(docx_path, "rb") as docx_file:
+        #         st.download_button(
+        #             label="📥 Download Study Plan (DOCX)",
+        #             data=docx_file,
+        #             file_name="study_plan.docx",
+        #             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        #         )

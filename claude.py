@@ -1,210 +1,315 @@
-import anthropic
-from docx import Document
-from docx.shared import Pt
-from docx.oxml.ns import qn
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-import re
-import sys
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-# === Read text from Word doc ===
-def read_docx_text(file_path):
-    doc = Document(file_path)
-    return "\n".join([para.text for para in doc.paragraphs if para.text.strip()])
-
-# === Add formatted text with bold styling ===
-def add_formatted_run(paragraph, text):
-    pattern = re.compile(r'(\*\*.*?\*\*|\*.*?\*\*)')
-    pos = 0
-    for match in pattern.finditer(text):
-        start, end = match.span()
-        if pos < start:
-            paragraph.add_run(text[pos:start])
-        matched_text = match.group()
-        cleaned_text = matched_text.strip('*')
-        run = paragraph.add_run(cleaned_text)
-        run.bold = True
-        pos = end
-    if pos < len(text):
-        paragraph.add_run(text[pos:])
-
-# === Write Claude output to Word ===
-def write_to_word(text, output_file="generated_study_plan.docx"):
-    doc = Document()
-    title = doc.add_heading("Generated Topic-Wise Study Plan", level=1)
-    title.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-
-    lines = text.split("\n")
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-
-        if line.startswith("### "):
-            doc.add_heading(line[4:], level=3)
-        elif line.startswith("## "):
-            doc.add_heading(line[3:], level=2)
-        elif line.startswith("# "):
-            doc.add_heading(line[2:], level=1)
-        elif re.match(r"^Chapter \d+: ", line, re.IGNORECASE):
-            doc.add_heading(line, level=2)
-        elif line.startswith(("-", "*", "•")):
-            p = doc.add_paragraph(style="List Bullet")
-            add_formatted_run(p, line[1:].strip())
-        elif re.match(r"^\d+\.", line):
-            p = doc.add_paragraph(style="List Number")
-            add_formatted_run(p, line.strip())
-        else:
-            p = doc.add_paragraph()
-            add_formatted_run(p, line)
-
-    doc.save(output_file)
-
-# === Build Prompt for Claude ===
-def build_prompt(certificate_name, context_text):
-    return f"""
-Generate a **complete and detailed preparation guide** for the certification course: {certificate_name}.
-
-Your output must be **clearly structured, visually scannable, and content-rich**. Focus on both **exam success** and **real-world applicability**.
-
-Organize the guide by **core topics or chapters** (not by calendar weeks), **but provide a suggested study sequence and timeline** upfront. Ensure the reader knows **what to study first, what matters most for the exam, and how to manage their time**.
-
----
-
-### 📌 Guide Structure
-
-Your output should follow this structure strictly:
-
----
-
-## 📚 Table of Contents (Clickable)
-
-List all major topics/chapters, with estimated study time and exam weight if applicable. Make this section clickable or clearly navigable.
-
-Format:
-- Topic 1: Title (⏱️ 15 hrs, 🎯 30% of Exam)
-- Topic 2: Title (⏱️ 10 hrs, 🎯 20% of Exam)
-- …
-
----
-
-## 🧭 Study Plan & Timeline
-
-Suggest a **recommended study sequence** with rough weekly pacing. For example:
-- Week 1–2: Focus on Topic A and B (⏱️ 25 hrs)
-- Week 3–4: Dive into Topic C (⏱️ 15 hrs)
-Also, mention **how long** the entire prep should ideally take (e.g., 6–8 weeks with 1–2 hours/day).
-
----
-
-Then for each topic, repeat the following structure:
-
----
-
-## ✅ Topic X of N: Topic Title (⏱️ X hrs, 🎯 Y% of Exam)
-
-### 1. Overview
-Introduce the topic, explain **why it matters** in the context of the exam and **real world example**. Keep it concise but informative.
-
-### 2. Key Subtopics
-Break down the topic into its core areas. Use short paragraphs (not bullets) to explain what each subtopic includes. Keep it concise.
-
-### 3. Detailed Learning Content
-Explain concepts in simple terms and in detail. Include:
-- Real-world examples or case studies
-- Step-by-step breakdowns
-- "Why this matters for the exam" notes
-- Summary tables in text format if needed
-- Use your own knowledge to fill in gaps
-
-### 4. Study Strategies & Techniques
-Provide guidance on how to study (keep it concise):
-- Common expert tips
-- Learning order if applicable
-
-### 6. High-Quality Resources (with Links)
-Curate **3–5 trusted links**. These can be:
-- Official documentation
-- Popular YouTube tutorials
-- Blog articles or GitHub repos
-Format: [Resource Title](URL) – brief description
-
-### 7. Practice Tools or Platforms (if applicable)
-List hands-on environments, mock tests, coding simulators, or sandboxes. Include official question banks if available.
-
-### 8. Mini Quiz / Self-Test
-Create 5 sample questions with:
-- Correct answer
-- Short explanation of why it’s correct
-Use plain text, no formatting or markdown.
-
----
-
-### 📌 Final Section: Quick Reference & Formula Sheet
-Summarize any **must-know formulas**, acronyms, or frameworks. This should act as a last-minute cram sheet. And tell common mistakes to avoid.
-
----
-
-### ⚠️ Formatting Rules
-- Cover all Topics in output
-- Keep each explanation **concise but complete**. Focus on clarity over length.
-- Keep everything **text-based** (no images or charts)
-- Use bullet points
-- Use **progress indicators** like “Topic X of N”
-- Ensure easy navigation via headings and clear structure
-- Every section should feel **useful, not overwhelming**
-
-### 🚫 Don’t Do This:
-- No vague summaries
-- No overuse of bullet points without explanation
-- No skipping the study timeline or quiz sections
-
-Take Help From the Context Below. It includes information you need to create a comprehensive study plan:
-\"\"\"
-{context_text}
-\"\"\"
-
-Now write the most structured, visual-friendly, and exam-focused guide possible for {certificate_name}.
 """
+Study Guide Converter - Convert Word documents to beautiful interactive HTML study guides
+Author: AI Assistant
+Requirements: pip install anthropic python-docx
+"""
+import os
+import anthropic
+import docx
+import json
+import sys
+from pathlib import Path
+from typing import Optional
 
-# === Main processing function ===
-def main(certificate_name="PMP Certificate"):
-    # Step 1: Read input context
-    context_text = read_docx_text("gpt_study_plan.docx")
-    print(f"📘 Certificate: {certificate_name}")
+class StudyGuideConverter:
+    """Main converter class for transforming Word documents into study guides"""
+    
+    def __init__(self, api_key: str):
+        """Initialize the converter with Anthropic API key"""
+        self.client = anthropic.Anthropic(api_key=api_key)
+        self.model = "claude-sonnet-4-20250514"
+    
+    def extract_text_from_docx(self, file_path: str) -> str:
+        """
+        Extract text content from Word document
+        
+        Args:
+            file_path: Path to the .docx file
+            
+        Returns:
+            Extracted text as string
+        """
+        print(f"📖 Reading document: {file_path}")
+        
+        try:
+            doc = docx.Document(file_path)
+            full_text = []
+            
+            # Extract paragraphs
+            for paragraph in doc.paragraphs:
+                text = paragraph.text.strip()
+                if text:
+                    full_text.append(text)
+            
+            # Extract tables if any
+            for table in doc.tables:
+                for row in table.rows:
+                    row_text = ' | '.join(cell.text.strip() for cell in row.cells)
+                    if row_text.strip():
+                        full_text.append(row_text)
+            
+            content = "\n".join(full_text)
+            print(f"✓ Extracted {len(content)} characters from document")
+            return content
+            
+        except Exception as e:
+            raise Exception(f"Error reading Word document: {str(e)}")
+    
+    # def generate_study_guide_html(self, document_text: str, course_name: Optional[str] = None) -> str:
+    def generate_study_guide_html(
+        self,
+        document_text,
+        course_name=None,
+        theme="Light",
+        font="Inter",
+        detail_level="Medium",
+        duration=4,
+        tone="Professional"
+    ):
 
-    # Step 2: Construct prompt
-    prompt = build_prompt(certificate_name, context_text)
+        """
+        Use Claude API to generate enhanced study guide with HTML
+        
+        Args:
+            document_text: The extracted text from the document
+            course_name: Optional course name for the title
+            
+        Returns:
+            Complete HTML code as string
+        """
+        print("🤖 Generating enhanced study guide with Claude API...")
+        
+        course_instruction = f"\nThe course name is: {course_name}" if course_name else ""
+        
+        # prompt = f"""You are an expert educational content designer and web developer. Transform this study guide document into a stunning, modern, interactive HTML page.
+        prompt = f"""
+You are an expert educational content designer and professional web developer.
 
-    # Step 3: Setup Anthropic Client
-    claude_api_key=os.getenv("CLAUDE_API_KEY")
-    client = anthropic.Anthropic(
-        api_key=claude_api_key  # <-- Replace with your actual key
-    )
+USER CUSTOMIZATION (apply strictly):
+- Color Theme: {theme}
+- Font Family: {font}
+- Detail Level: {detail_level}
+- Study Duration: {duration} weeks
+- Writing Tone: {tone}
 
-    # Step 4: Stream response
-    print("⚙️ Generating content using Claude...")
-    stream = client.messages.create(
-        model="claude-opus-4-20250514",
-        stream=True,
-        max_tokens=20000,
-        temperature=0.7,
-        messages=[{"role": "user", "content": prompt}]
-    )
+Apply these preferences in:
+- HTML structure
+- CSS styling
+- Tone, phrasing, and level of detail
+- Section length & density
+- Color palette
+- Typography
+- Emphasis & layout spacing
+- Box shadows, gradients, accents
 
-    # Step 5: Accumulate and save response
-    response_text = ""
-    for event in stream:
-        if hasattr(event, "delta") and hasattr(event.delta, "text"):
-            response_text += event.delta.text
+Now transform the following document into a beautiful, interactive HTML study guide:
 
-    # Step 6: Write to Word
-    write_to_word(response_text, "generated_study_plan.docx")
-    print("✅ Study plan generated: generated_study_plan.docx")
+COURSE NAME (optional): {course_name}
 
-# === CLI Entry ===
+DOCUMENT CONTENT:
+{document_text}
+
+IMPORTANT:
+- All generated HTML must respect the user-selected theme, font, detail level, and tone.
+- Tone = {tone} must influence writing style.
+- Detail level = {detail_level} must control how verbose sections are.
+- Theme = {theme} must influence colors.
+- Font = {font} must be used throughout (import via Google Fonts).
+
+{course_instruction}
+
+Create a beautiful, comprehensive HTML study guide with these features:
+
+1. **HERO SECTION**:
+   - Eye-catching gradient background
+   - Course title (large and bold)
+   - Subtitle with key course info
+   - Modern design with animations
+
+2. **EXECUTIVE SUMMARY**:
+   - Concise 3-4 sentence overview of the entire content
+   - Highlight what students will learn
+   - Use engaging language
+
+3. **TABLE OF CONTENTS**:
+   - Clickable navigation to all major sections
+   - Smooth scroll behavior
+   - Do NOT use sticky or fixed positioning
+   - TOC should scroll normally with the page
+
+4. **MAIN CONTENT SECTIONS**:
+   - Organize content into logical chapters/topics
+   - Each section with unique color accent
+   - Use icons/emojis relevant to each topic
+   - Include expandable/collapsible subsections
+   - Add visual separators between sections
+
+5. **KEY CONCEPTS CARDS**:
+   - Highlight the most important concepts
+   - Beautiful card design with hover effects
+   - Color-coded by difficulty or topic
+
+6. **INTERACTIVE ELEMENTS**:
+   - Progress tracker with checkboxes for each major topic
+   - "Mark as Complete" functionality
+   - Progress percentage display
+   - The progress bar must scroll normally with the page
+   - Do NOT make the progress bar sticky or fixed
+   - Tooltip hints on hover
+   - Smooth transitions
+
+7. **STUDY TIPS SECTION**:
+   - AI-generated study recommendations
+   - Time management tips (detailed)
+   - Memory techniques relevant to the content
+
+8. **QUICK REFERENCE**:
+   - Glossary of key terms
+   - Important formulas/definitions in cards
+   - Quick facts section
+
+9. **VISUAL DESIGN**:
+   - Modern color scheme (use gradients: purple-blue, teal-green, or pink-orange)
+   - Beautiful typography (multiple font weights)
+   - Responsive design (mobile-friendly)
+   - Smooth scroll behavior
+   - Hover effects on interactive elements
+   - Box shadows and depth
+   - Professional spacing and layout
+
+10. **EXTRAS**:
+    - Print-friendly CSS
+    - Notes section where students can add their own notes
+
+TECHNICAL REQUIREMENTS:
+- Return ONLY complete, valid HTML
+- Include all CSS in <style> tags
+- Include all JavaScript in <script> tags
+- Make it completely self-contained (no external dependencies except fonts)
+- Use Google Fonts (Poppins, Inter, or Roboto)
+- Ensure all interactive features work
+- Add smooth animations with CSS transitions
+- Make it production-ready
+- dont use any external libraries or frameworks
+- use minimal javascript and limied dropdowns
+
+Make this study guide so visually appealing and useful that students will actually want to study from it!"""
+
+        try:
+            message = self.client.messages.create(
+                model=self.model,
+                max_tokens=16000,
+                temperature=1,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            
+            html_content = message.content[0].text
+            
+            # Clean up the response (remove markdown code blocks if present)
+            if html_content.startswith("```html"):
+                html_content = html_content.split("```html")[1]
+                html_content = html_content.rsplit("```")[0]
+            elif html_content.startswith("```"):
+                html_content = html_content.split("```")[1]
+                html_content = html_content.rsplit("```")[0]
+            
+            print("✓ Study guide generated successfully")
+            return html_content.strip()
+            
+        except anthropic.APIError as e:
+            raise Exception(f"Claude API Error: {str(e)}")
+    
+    def save_html_file(self, html_content: str, output_path: str) -> None:
+        """
+        Save the generated HTML to a file
+        
+        Args:
+            html_content: The HTML content to save
+            output_path: Path where to save the file
+        """
+        print(f"💾 Saving HTML file to: {output_path}")
+        
+        try:
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(html_content)
+            print(f"✅ Study guide saved successfully!")
+        except Exception as e:
+            raise Exception(f"Error saving HTML file: {str(e)}")
+    
+    # def convert(self, docx_path: str, output_path: str, course_name: Optional[str] = None) -> None:
+    def convert(self, docx_path, output_path, course_name=None,
+            theme="Light", font="Inter", 
+            detail_level="Medium", duration=4, tone="Professional"):
+        """
+        Main conversion method
+        
+        Args:
+            docx_path: Path to input Word document
+            output_path: Path for output HTML file
+            course_name: Optional course name
+        """
+        print("\n" + "="*60)
+        print("📚 STUDY GUIDE CONVERTER")
+        print("="*60 + "\n")
+        
+        # Step 1: Extract text
+        document_text = self.extract_text_from_docx(docx_path)
+        
+        if not document_text:
+            raise Exception("No text content found in the document")
+        
+        # Step 2: Generate HTML
+        # html_content = self.generate_study_guide_html(document_text, course_name)
+        html_content = self.generate_study_guide_html(
+            document_text=document_text,
+            course_name=course_name,
+            theme=theme,
+            font=font,
+            detail_level=detail_level,
+            duration=duration,
+            tone=tone
+        )
+
+        
+        # Step 3: Save file
+        self.save_html_file(html_content, output_path)
+        
+        print("\n" + "="*60)
+        print(f"🎉 DONE! Open '{output_path}' in your browser")
+        print("="*60 + "\n")
+
+
+def main(topic, theme, font, detail_level, duration, tone):
+    """Main entry point"""
+
+    API_KEY = os.getenv("ANTHROPIC_API_KEY")
+
+    INPUT_FILE = "gpt_study_plan.docx"
+    OUTPUT_FILE = "study_guide.html"
+    COURSE_NAME = topic
+
+    if not Path(INPUT_FILE).exists():
+        print(f"❌ Error: Input file '{INPUT_FILE}' not found")
+        sys.exit(1)
+
+    try:
+        converter = StudyGuideConverter(api_key=API_KEY)
+        converter.convert(
+            docx_path=INPUT_FILE,
+            output_path=OUTPUT_FILE,
+            course_name=COURSE_NAME,
+            theme=theme,
+            font=font,
+            detail_level=detail_level,
+            duration=duration,
+            tone=tone
+        )
+    except Exception as e:
+        print(f"\n❌ Error: {str(e)}")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
-    cert_name = sys.argv[1] if len(sys.argv) > 1 else "PMP Certificate"
-    main(cert_name)
+    main()

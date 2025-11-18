@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Science Mastery - Complete Study Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8fafc;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="25" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="25" cy="75" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Executive Summary */
+        .executive-summary {
+            background: white;
+            padding: 3rem 2rem;
+            margin: -2rem 2rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .executive-summary h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .summary-content {
+            font-size: 1.1rem;
+            color: #555;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            padding: 2rem;
+            position: sticky;
+            top: 2rem;
+            z-index: 100;
+        }
+
+        .toc h3 {
+            color: #667eea;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .toc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            list-style: none;
+        }
+
+        .toc-item {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .toc-item:nth-child(2) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .toc-item:nth-child(3) { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .toc-item:nth-child(4) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .toc-item:nth-child(5) { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .toc-item:nth-child(6) { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .toc-item:nth-child(7) { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+
+        .toc-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .toc-item a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        /* Progress Tracker */
+        .progress-tracker {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 10px;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin: 3rem 0;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .section-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        /* Key Concepts Cards */
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .concept-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 5px solid #667eea;
+        }
+
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .concept-card h4 {
+            color: #667eea;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .concept-card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .concept-difficulty {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-beginner { background: #d4f6d4; color: #2d5d2d; }
+        .difficulty-intermediate { background: #fff4d4; color: #8b6914; }
+        .difficulty-advanced { background: #fdd4d4; color: #8b1414; }
+
+        /* Collapsible Sections */
+        .collapsible {
+            background: #f8fafc;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            background: #667eea;
+            color: white;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #5a67d8;
+        }
+
+        .collapsible-content {
+            padding: 1.5rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .collapsible-content.active {
+            display: block;
+        }
+
+        /* Study Tips */
+        .study-tips {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .tip-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .tip-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Quick Reference */
+        .quick-reference {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .reference-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .reference-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Checkbox Styles */
+        .topic-checkbox {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .topic-checkbox:hover {
+            background: #f8fafc;
+        }
+
+        .topic-checkbox input[type="checkbox"] {
+            margin-right: 0.5rem;
+            transform: scale(1.2);
+        }
+
+        .topic-checkbox label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .topic-checkbox.completed {
+            background: #d4f6d4;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                max-height: 0;
+            }
+            to {
+                max-height: 1000px;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .content-section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .toc-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .concepts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .hero {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .toc, .progress-tracker {
+                display: none;
+            }
+            
+            .content-section {
+                break-inside: avoid;
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🎯 Data Science Mastery</h1>
+            <p class="hero-subtitle">Your Complete Guide to Conquering Data Science Exams & Interviews</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">7</span>
+                    <span class="stat-label">Core Topics</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">12</span>
+                    <span class="stat-label">Weeks Program</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span class="stat-label">Key Concepts</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Executive Summary -->
+    <div class="container">
+        <section class="executive-summary">
+            <h2>📊 Executive Summary</h2>
+            <div class="summary-content">
+                <p>This comprehensive study guide covers the essential data science topics that matter most for exam success and career advancement. From Python programming and statistical foundations to machine learning algorithms and big data technologies, you'll master the skills that separate good data scientists from great ones. Our structured 12-week program combines theoretical understanding with practical application, ensuring you're ready for both technical assessments and real-world challenges.</p>
+            </div>
+        </section>
+
+        <!-- Progress Tracker -->
+        <section class="progress-tracker">
+            <h3>📈 Your Study Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0% Complete</div>
+            <p>Check off topics as you master them!</p>
+        </section>
+
+        <!-- Table of Contents -->
+        <nav class="toc">
+            <h3>📚 Study Guide Navigation</h3>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#focus-topics">🎯 Priority Topics</a></li>
+                <li class="toc-item"><a href="#core-concepts">📖 Core Concepts</a></li>
+                <li class="toc-item"><a href="#exam-relevance">💡 Exam Strategy</a></li>
+                <li class="toc-item"><a href="#resources">📚 Learning Resources</a></li>
+                <li class="toc-item"><a href="#study-strategies">🧠 Study Methods</a></li>
+                <li class="toc-item"><a href="#insights">⚠️ Pro Tips</a></li>
+                <li class="toc-item"><a href="#study-plan">📅 12-Week Plan</a></li>
+            </ul>
+        </nav>
+
+        <!-- Focus Topics Section -->
+        <section class="content-section" id="focus-topics">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">Most Important Topics to Focus On</h2>
+            </div>
+            <div class="section-content">
+                <p>Success in data science requires mastering a few high-impact areas that repeatedly surface in exams and practical applications. Focus your energy on these core domains:</p>
+                
+                <div class="concepts-grid">
+                    <div class="concept-card">
+                        <h4>🐍 Python Programming & Libraries</h4>
+                        <p>Master NumPy, pandas, Matplotlib, and scikit-learn. These form the backbone of data manipulation, analysis, and machine learning.</p>
+                        <span class="concept-difficulty difficulty-beginner">High Priority</span>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="python-basics">
+                            <label for="python-basics">Python fundamentals mastered</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>📊 Statistics & Probability</h4>
+                        <p>Descriptive statistics, hypothesis testing, distributions, correlation, and Bayesian reasoning underpin all data science work.</p>
+                        <span class="concept-difficulty difficulty-intermediate">Critical</span>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="stats-basics">
+                            <label for="stats-basics">Statistical foundations solid</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>🤖 Machine Learning Algorithms</h4>
+                        <p>Supervised learning (regression, classification) and unsupervised learning (clustering) with proper evaluation metrics.</p>
+                        <span class="concept-difficulty difficulty-advanced">Essential</span>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="ml-algorithms">
+                            <label for="ml-algorithms">Core ML algorithms understood</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>🧹 Data Preprocessing</h4>
+                        <p>Cleaning messy data, handling missing values, outlier detection, normalization, and feature engineering.</p>
+                        <span class="concept-difficulty difficulty-intermediate">Vital</span>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="data-cleaning">
+                            <label for="data-cleaning">Data cleaning techniques mastered</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>📈 Data Visualization</h4>
+                        <p>Creating compelling charts, exploratory data analysis, and communicating insights through visual storytelling.</p>
+                        <span class="concept-difficulty difficulty-beginner">Important</span>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="visualization">
+                            <label for="visualization">Visualization skills developed</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>⚡ Big Data Technologies</h4>
+                        <p>Hadoop, Spark, cloud platforms (AWS, Azure), and real-time streaming for scalable analytics.</p>
+                        <span class="concept-difficulty difficulty-advanced">Emerging</span>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="big-data">
+                            <label for="big-data">Big data concepts learned</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Concepts Section -->
+        <section class="content-section" id="core-concepts">
+            <div class="section-header">
+                <span class="section-icon">📖</span>
+                <h2 class="section-title">Core Concepts & Learning Content</h2>
+            </div>
+            <div class="section-content">
+                
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        🐍 Python Programming and Data Science Libraries
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Concept Explanation:</h4>
+                        <p>Python is the most widely used language in data science due to its readable syntax and powerful libraries. Key libraries include NumPy (numerical arrays), pandas (data manipulation), Matplotlib/Seaborn (visualization), and scikit-learn (machine learning).</p>
+                        
+                        <h4>Key Formulas & Rules:</h4>
+                        <ul>
+                            <li><code>np.array()</code> creates arrays</li>
+                            <li><code>reshape()</code> changes dimensions</li>
+                            <li>Slicing syntax: <code>array[row_start:row_end, col_start:col_end]</code></li>
+                            <li>Vectorized operations replace explicit loops for speed</li>
+                        </ul>
+                        
+                        <h4>Tricky Points:</h4>
+                        <p>Understanding zero-based indexing, multidimensional slicing, difference between lists and arrays in memory footprint, and homogeneous data types in arrays.</p>
+                        
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="python-libraries">
+                            <label for="python-libraries">NumPy, pandas, matplotlib mastered</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        📊 Descriptive and Inferential Statistics
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Concept Explanation:</h4>
+                        <p>Descriptive statistics summarize data (mean, median, variance). Inferential statistics use samples to make population generalizations through hypothesis testing and confidence intervals.</p>
+                        
+                        <h4>Key Formulas:</h4>
+                        <ul>
+                            <li>Mean: x̄ = (1/n) Σ xᵢ</li>
+                            <li>Variance: σ² = (1/n) Σ (xᵢ - x̄)²</li>
+                            <li>Standard deviation: σ = √σ²</li>
+                            <li>Z-score: z = (x - μ)/σ</li>
+                            <li>Bayes' theorem: P(A|B) = P(B|A) × P(A) / P(B)</li>
+                        </ul>
+                        
+                        <h4>Tricky Points:</h4>
+                        <p>Difference between population and sample statistics, p-value interpretation, correlation vs causation, handling skewness and kurtosis.</p>
+                        
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="statistics">
+                            <label for="statistics">Statistical concepts mastered</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        🤖 Core Machine Learning Algorithms
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Concept Explanation:</h4>
+                        <p>Machine learning builds predictive models from data. Supervised learning uses labeled data for regression and classification. Unsupervised learning finds structure without labels.</p>
+                        
+                        <h4>Key Formulas:</h4>
+                        <ul>
+                            <li>Linear regression: y = β₀ + β₁x₁ + ... + βₙxₙ + ε</li>
+                            <li>Logistic sigmoid: σ(x) = 1/(1 + e⁻ˣ)</li>
+                            <li>Mean Square Error (MSE) for regression</li>
+                            <li>Cross-Entropy for classification</li>
+                        </ul>
+                        
+                        <h4>Tricky Points:</h4>
+                        <p>Avoiding overfitting with regularization (L1/L2), selecting right algorithms, understanding evaluation metrics (accuracy, precision, recall, ROC AUC).</p>
+                        
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="ml-concepts">
+                            <label for="ml-concepts">ML algorithms understood</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        🧹 Data Preprocessing & Cleaning
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Concept Explanation:</h4>
+                        <p>Real-world data is messy. Preprocessing involves cleaning by handling missing values, encoding categorical variables, scaling features, and detecting outliers.</p>
+                        
+                        <h4>Key Techniques:</h4>
+                        <ul>
+                            <li>Mean imputation: x_missing = (1/n) Σ xᵢ</li>
+                            <li>Standardization: x_scaled = (x - μ)/σ</li>
+                            <li>One-hot encoding for categorical variables</li>
+                            <li>Outlier detection using IQR or Z-score</li>
+                        </ul>
+                        
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="preprocessing">
+                            <label for="preprocessing">Data preprocessing mastered</label>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Exam Relevance Section -->
+        <section class="content-section" id="exam-relevance">
+            <div class="section-header">
+                <span class="section-icon">💡</span>
+                <h2 class="section-title">Why This Matters: Exam Relevance</h2>
+            </div>
+            <div class="section-content">
+                <div class="concepts-grid">
+                    <div class="concept-card">
+                        <h4>🐍 Python & Libraries</h4>
+                        <p>Appear as practical coding exercises and multiple-choice questions. High scoring impact since Python proficiency is fundamental for most exam sections.</p>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="exam-python">
+                            <label for="exam-python">Python exam strategy understood</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>📊 Statistics & Probability</h4>
+                        <p>Core of theory-based questions and case studies. Expect calculations for hypothesis tests, confidence intervals, and Bayesian reasoning.</p>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="exam-stats">
+                            <label for="exam-stats">Statistics exam approach mastered</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>🤖 Machine Learning</h4>
+                        <p>Tests understanding of algorithm types, usage scenarios, and evaluation metrics. Case studies may ask for suitable ML approaches.</p>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="exam-ml">
+                            <label for="exam-ml">ML exam strategy developed</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h4>🧹 Data Cleaning</h4>
+                        <p>Frequently tested in scenario questions. Must know how to handle missing data, outliers, and categorical variables properly.</p>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="exam-cleaning">
+                            <label for="exam-cleaning">Data cleaning exam prep done</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Study Strategies Section -->
+        <section class="study-tips">
+            <h2>🧠 Effective Study Strategies</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <h4>⏰ Time Management</h4>
+                    <p>Aim for 15-20 hours per week over 3-6 months. Start with foundational Python and statistics, then progress to ML and projects.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h4>🎯 Active Learning</h4>
+                    <p>Use active recall by coding yourself, not just watching videos. Apply spaced repetition for formulas and key concepts.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h4>💻 Practice Strategy</h4>
+                    <p>Complete 3-5 hands-on projects and take multiple mock exams. Review every incorrect answer in depth.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h4>👥 Community Learning</h4>
+                    <p>Join study groups and online communities for discussion, problem-solving, and motivation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Reference Section -->
+        <section class="quick-reference">
+            <div class="section-header">
+                <span class="section-icon">⚡</span>
+                <h2 class="section-title">Quick Reference Guide</h2>
+            </div>
+            
+            <div class="reference-grid">
+                <div class="reference-card">
+                    <h4>🔤 Key Python Functions</h4>
+                    <ul>
+                        <li><code>pd.read_csv()</code> - Load data</li>
+                        <li><code>df.groupby()</code> - Group operations</li>
+                        <li><code>np.mean()</code> - Calculate mean</li>
+                        <li><code>sklearn.model_selection</code> - Split data</li>
+                    </ul>
+                </div>
+                
+                <div class="reference-card">
+                    <h4>📊 Statistical Tests</h4>
+                    <ul>
+                        <li>t-test - Compare means</li>
+                        <li>Chi-square - Test independence</li>
+                        <li>ANOVA - Multiple group comparison</li>
+                        <li>Correlation - Measure relationship</li>
+                    </ul>
+                </div>
+                
+                <div class="reference-card">
+                    <h4>🤖 ML Evaluation Metrics</h4>
+                    <ul>
+                        <li>Accuracy = (TP + TN) / Total</li>
+                        <li>Precision = TP / (TP + FP)</li>
+                        <li>Recall = TP / (TP + FN)</li>
+                        <li>F1 = 2 × (Precision × Recall) / (Precision + Recall)</li>
+                    </ul>
+                </div>
+                
+                <div class="reference-card">
+                    <h4>🎨 Visualization Types</h4>
+                    <ul>
+                        <li>Histogram - Distribution</li>
+                        <li>Scatter - Correlation</li>
+                        <li>Box plot - Outliers</li>
+                        <li>Bar chart - Categories</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section class="content-section" id="resources">
+            <div class="section-header">
+                <span class="section-icon">📚</span>
+                <h2 class="section-title">Curated Learning Resources</h2>
+            </div>
+            <div class="section-content">
+                
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        📖 Essential Books
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <ul>
+                            <li><strong>Data Science From Scratch</strong> by Joel Grus - Beginner-friendly coverage from first principles</li>
+                            <li><strong>Hands-On Machine Learning</strong> by Aurélien Géron - Practical ML with Python</li>
+                            <li><strong>Introduction to Statistical Learning</strong> (free) - Comprehensive stats and ML foundations</li>
+                            <li><strong>Ace the Data Science Interview</strong> by Nick Singh - Interview preparation</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="books-reviewed">
+                            <label for="books-reviewed">Key books identified and prioritized</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        🎥 Online Courses
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <ul>
+                            <li><strong>MIT Applied Data Science</strong> - Covers Python, statistics, visualization, and ML</li>
+                            <li><strong>DataCamp Data Scientist Track</strong> - Interactive coding lessons</li>
+                            <li><strong>Coursera Machine Learning</strong> by Andrew Ng - Foundational ML algorithms</li>
+                            <li><strong>FastAI Practical Deep Learning</strong> - Hands-on deep learning</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="courses-enrolled">
+                            <label for="courses-enrolled">Course selections made and started</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        💻 Practice Platforms
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <ul>
+                            <li><strong>Analyst Builder</strong> - Free coding interview prep</li>
+                            <li><strong>Kaggle</strong> - Competitions and real-world datasets</li>
+                            <li><strong>DataLemur</strong> - SQL and data science problems</li>
+                            <li><strong>StrataScratch</strong> - Company-specific interview questions</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="practice-started">
+                            <label for="practice-started">Practice platforms set up and used</label>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- User Insights Section -->
+        <section class="content-section" id="insights">
+            <div class="section-header">
+                <span class="section-icon">⚠️</span>
+                <h2 class="section-title">Pro Tips: What Works & What Doesn't</h2>
+            </div>
+            <div class="section-content">
+                
+                <div class="concepts-grid">
+                    <div class="concept-card" style="border-left-color: #10B981;">
+                        <h4>✅ What Successful Candidates Did</h4>
+                        <ul>
+                            <li>Consistent daily coding practice</li>
+                            <li>Built portfolio with real-world projects</li>
+                            <li>Used interactive platforms like DataCamp</li>
+                            <li>Participated in study communities</li>
+                            <li>Balanced theory with practical coding</li>
+                            <li>Practiced under timed conditions</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="success-strategies">
+                            <label for="success-strategies">Success strategies implemented</label>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card" style="border-left-color: #EF4444;">
+                        <h4>❌ Common Mistakes to Avoid</h4>
+                        <ul>
+                            <li>Neglecting statistics fundamentals</li>
+                            <li>Over-reliance on passive video learning</li>
+                            <li>Underestimating data cleaning time</li>
+                            <li>Skipping mock exams until too late</li>
+                            <li>Ignoring soft skill preparation</li>
+                            <li>Overcomplicating visualizations</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="mistakes-noted">
+                            <label for="mistakes-noted">Common pitfalls identified and avoided</label>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Study Plan Section -->
+        <section class="content-section" id="study-plan">
+            <div class="section-header">
+                <span class="section-icon">📅</span>
+                <h2 class="section-title">12-Week Structured Study Plan</h2>
+            </div>
+            <div class="section-content">
+                
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        🏗️ Weeks 1-4: Foundation Building
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Topics:</h4>
+                        <p>Python basics, NumPy, pandas, basic statistics & probability</p>
+                        <h4>Resources:</h4>
+                        <p>MIT Applied Data Science, DataCamp Python tracks, "Data Science From Scratch"</p>
+                        <h4>Goals:</h4>
+                        <ul>
+                            <li>Write Python code to manipulate arrays and data frames</li>
+                            <li>Calculate descriptive statistics</li>
+                            <li>Create basic visualizations</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="weeks-1-4">
+                            <label for="weeks-1-4">Weeks 1-4 foundations completed</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        🤖 Weeks 5-8: Machine Learning Core
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Topics:</h4>
+                        <p>Supervised learning, unsupervised learning, model evaluation, overfitting & regularization</p>
+                        <h4>Resources:</h4>
+                        <p>Coursera Machine Learning, DataCamp ML Fundamentals, "Hands-On Machine Learning"</p>
+                        <h4>Goals:</h4>
+                        <ul>
+                            <li>Build and evaluate ML models with scikit-learn</li>
+                            <li>Perform feature engineering</li>
+                            <li>Understand bias-variance tradeoff</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="weeks-5-8">
+                            <label for="weeks-5-8">Weeks 5-8 ML core completed</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        🚀 Weeks 9-10: Advanced Topics
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Topics:</h4>
+                        <p>Deep learning intro, reinforcement learning overview, big data tools</p>
+                        <h4>Resources:</h4>
+                        <p>FastAI Deep Learning, DataCamp Deep Learning with TensorFlow</p>
+                        <h4>Goals:</h4>
+                        <ul>
+                            <li>Understand neural networks basics</li>
+                            <li>Explore big data platforms</li>
+                            <li>Implement simple deep learning models</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="weeks-9-10">
+                            <label for="weeks-9-10">Weeks 9-10 advanced topics completed</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        📊 Week 11: Visualization & Communication
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Topics:</h4>
+                        <p>Effective visualization practices, storytelling with data, dashboard creation</p>
+                        <h4>Resources:</h4>
+                        <p>"Storytelling with Data", Tableau Public tutorials, DataCamp Visualization courses</p>
+                        <h4>Goals:</h4>
+                        <ul>
+                            <li>Create clean, impactful visualizations</li>
+                            <li>Prepare presentation narratives</li>
+                            <li>Build simple dashboards</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="week-11">
+                            <label for="week-11">Week 11 visualization mastered</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        🎯 Week 12: Exam Readiness
+                        <span>▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <h4>Topics:</h4>
+                        <p>Mock exams, review weak spots, interview prep, communication skills</p>
+                        <h4>Resources:</h4>
+                        <p>Analyst Builder prep, DataCamp simulators, community forums</p>
+                        <h4>Goals:</h4>
+                        <ul>
+                            <li>Take at least 2 full mock exams</li>
+                            <li>Refine problem-solving speed</li>
+                            <li>Polish communication skills</li>
+                        </ul>
+                        <div class="topic-checkbox">
+                            <input type="checkbox" id="week-12">
+                            <label for="week-12">Week 12 exam readiness achieved</label>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Personal Notes Section -->
+        <section class="notes-section">
+            <div class="section-header">
+                <span class="section-icon">📝</span>
+                <h2 class="section-title">Your Personal Study Notes</h2>
+            </div>
+            <p>Use this space to jot down key insights, questions, or reminders as you progress through your studies:</p>
+            <textarea class="notes-textarea" placeholder="Write your study notes here... 
+
+Examples:
+- Key concepts that need more practice
+- Questions to research further  
+- Personal insights and connections
+- Exam strategies that work for you
+- Project ideas for your portfolio"></textarea>
+        </section>
+
+    </div>
+
+    <script>
+        // Progress tracking functionality
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        function updateProgress() {
+            const totalCheckboxes = checkboxes.length;
+            const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const percentage = Math.round((checkedCheckboxes / totalCheckboxes) * 100);
+            
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = percentage + '% Complete';
+            
+            // Store progress in localStorage
+            const checkedIds = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.id);
+            localStorage.setItem('studyProgress', JSON.stringify(checkedIds));
+        }
+
+        // Load saved progress
+        function loadProgress() {
+            const savedProgress = localStorage.getItem('studyProgress');
+            if (savedProgress) {
+                const checkedIds = JSON.parse(savedProgress);
+                checkedIds.forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        checkbox.parentElement.classList.add('completed');
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // Add event listeners to checkboxes
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parent = this.parentElement;
+                if (this.checked) {
+                    parent.classList.add('completed');
+                } else {
+                    parent.classList.remove('completed');
+                }
+                updateProgress();
+            });
+        });
+
+        // Collapsible sections functionality
+        const collapsibleHeaders = document.querySelectorAll('.collapsible-header');
+        
+        collapsibleHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const arrow = this.querySelector('span');
+                
+                if (content.classList.contains('active')) {
+                    content.classList.remove('active');
+                    arrow.textContent = '▼';
+                } else {
+                    content.classList.add('active');
+                    arrow.textContent = '▲';
+                }
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        const tocLinks = document.querySelectorAll('.toc a');
+        
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Save notes functionality
+        const notesTextarea = document.querySelector('.notes-textarea');
+        
+        notesTextarea.addEventListener('input', function() {
+            localStorage.setItem('studyNotes', this.value);
+        });
+
+        // Load saved notes
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('studyNotes');
+            if (savedNotes) {
+                notesTextarea.value = savedNotes;
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            loadNotes();
+        });
+
+        // Add some visual feedback when checkboxes are clicked
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        this.parentElement.style.transform = 'scale(1)';
+                    }, 150);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
