@@ -543,12 +543,12 @@ elif feature_choice == "🎯 Study Plan Generator":
         # Placeholder for future output
         st.subheader("📦 Final Output")
 
-        # docx_path = "generated_study_plan.docx"
-        # if os.path.exists(docx_path):
-        #     with open(docx_path, "rb") as docx_file:
-        #         st.download_button(
-        #             label="📥 Download Study Plan (DOCX)",
-        #             data=docx_file,
-        #             file_name="study_plan.docx",
-        #             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        #         )
+        html_path = "study_guide.html"
+        if os.path.exists(html_path):
+            with open(html_path, "r", encoding="utf-8") as html_file:
+                st.download_button(
+                    label="📥 Download Study Plan (HTML)",
+                    data=html_file.read(),
+                    file_name="study_guide.html",
+                    mime="text/html"
+                )
