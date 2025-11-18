@@ -457,7 +457,8 @@ elif feature_choice == "🎯 Study Plan Generator":
             yt_prompt = f'Find high-quality {user_input} preparation guide and tutorial videos. Focus on complete guides, exam tips, and step-by-step walkthroughs from popular educational channels. Do not include playlists or channel links'
             # yt_urls, yt_answer = search_and_extract(yt_prompt, "YouTube Videos", include_domains=["youtube.com"])
             yt_urls, yt_answer = search_and_extract(yt_prompt, "YouTube Videos",topic=user_input,similarity_threshold=0.50, include_domains=["youtube.com"])
-            all_results += yt_urls
+            youtube_urls = filter_youtube_by_length(yt_urls, max_minutes=40)
+            all_results += youtube_urls
 
             reddit_prompt = f'Find the Reddit posts discussing preparation strategies, shared experiences, focus areas, and recommended resources for the {user_input}.'
             # reddit_urls, reddit_answer = search_and_extract(reddit_prompt, "Reddit Posts", include_domains=["reddit.com"])
@@ -537,12 +538,12 @@ elif feature_choice == "🎯 Study Plan Generator":
             youtube_main(final_data["youtube"])
 
             # Call Reddit Fetch
-            st.write("▶️ Running Reddit post fetcher...")
-            reddit_main(final_data["reddit"])
+            # st.write("▶️ Running Reddit post fetcher...")
+            # reddit_main(final_data["reddit"])
 
-            # Call Tavily Web Extractor
-            st.write("▶️ Running Webpage text extractor...")
-            urls_main(final_data["other"],final_data["answers"]["web"])
+            # # Call Tavily Web Extractor
+            # st.write("▶️ Running Webpage text extractor...")
+            # urls_main(final_data["other"],final_data["answers"]["web"])
 
             st.write("🧠 Generating topic insights with GPT...")
             gpt_main(certificate_name=user_input)
@@ -569,10 +570,12 @@ elif feature_choice == "🎯 Study Plan Generator":
 
         html_path = "study_guide.html"
         if os.path.exists(html_path):
-            with open(html_path, "r", encoding="utf-8") as html_file:
+            with open(html_path, "rb") as html_file:
                 st.download_button(
                     label="📥 Download Study Plan (HTML)",
                     data=html_file.read(),
                     file_name="study_guide.html",
                     mime="text/html"
                 )
+        else:
+            st.warning("⚠ Study guide HTML file not found. Make sure Claude generated it successfully.")
