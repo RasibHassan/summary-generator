@@ -115,7 +115,7 @@ def cosine_similarity(a, b):
     return util.cos_sim(a, b).item()
 
 def search_and_extract(prompt, category, topic, similarity_threshold=0.60,
-                       include_domains=None, exclude_domains=None, max_results=10):
+                       include_domains=None, exclude_domains=None, max_results=12):
 
     # Step 1: Tavily API Call
     response = tavily_client.search(
