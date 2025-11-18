@@ -102,7 +102,25 @@ def write_to_word(text, output_file="generated_summary.docx"):
 from tavily import TavilyClient
 from sentence_transformers import SentenceTransformer, util
 import numpy as np
+from pytube import YouTube
 
+def filter_youtube_by_length(urls, max_minutes=60):
+    """
+    Filters out YouTube URLs whose duration is longer than max_minutes.
+    Returns a list of allowed URLs.
+    """
+    allowed_urls = []
+    for url in urls:
+        try:
+            yt = YouTube(url)
+            length_minutes = yt.length / 60  # yt.length is in seconds
+            if length_minutes <= max_minutes:
+                allowed_urls.append(url)
+            else:
+                st.warning(f"⚠ Skipped '{yt.title}' ({length_minutes:.1f} min) — longer than {max_minutes} minutes.")
+        except Exception as e:
+            st.warning(f"⚠ Could not fetch video info for {url}: {e}")
+    return allowed_urls
 # Load embedding model once
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -219,6 +237,12 @@ if feature_choice == "📝 Summary Generator":
     if use_docs:
         st.subheader("📄 Upload Document Files")
         document_files = st.file_uploader("Upload documents", type=["pdf", "docx"], accept_multiple_files=True)
+    if youtube_urls:
+        st.subheader("📺 YouTube Video URLs")
+        youtube_urls = youtube_input.strip().splitlines()
+        
+        # Filter out videos longer than 1 hour
+        youtube_urls = filter_youtube_by_length(youtube_urls, max_minutes=40)
 
     # === Generate Summaries ===
     if st.button("🚀 Generate Summary"):
